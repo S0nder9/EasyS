@@ -14,6 +14,21 @@ export interface ProgramNode {
   app: AppNode;
 }
 
+/** Parsed .easys file before import resolution / expansion */
+export interface ModuleNode {
+  type: "Module";
+
+  filePath: string;
+
+  imports: ImportNode[];
+
+  styles: StyleNode[];
+
+  components: ComponentNode[];
+
+  app?: AppNode;
+}
+
 export interface AppNode {
   type: "App";
 
@@ -211,6 +226,9 @@ export interface ImportNode {
   type: "Import";
 
   path: string;
+
+  /** optional binding name from `import Name from "path"` */
+  name?: string;
 }
 
 export interface ComponentCallNode {
