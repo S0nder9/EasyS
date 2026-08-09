@@ -3,20 +3,15 @@ import fs from "fs";
 
 import { build } from "./build";
 import { startServer } from "../server/DevServer";
-import { findProjectRoot, loadConfig } from "../utils/Project";
+import { findProject } from "../../project/findProject";
 
 export async function dev() {
-  const root = findProjectRoot();
-  const config = loadConfig(root);
-  const dist = path.isAbsolute(config.output)
-    ? config.output
-    : path.join(root, config.output);
+  const project = findProject();
 
   build();
-  startServer(dist, 3000);
+  startServer(project.output, 3000);
 
   try {
-    // optional dependency
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const open = require("open");
     await open("http://localhost:3000");
@@ -24,8 +19,7 @@ export async function dev() {
     console.log("Open http://localhost:3000 in your browser");
   }
 
-  const srcDir = path.join(root, "src");
-  const watchTarget = fs.existsSync(srcDir) ? srcDir : root;
+  const watchTarget = project.srcDir;
 
   console.log(`Watching ${watchTarget} ...`);
 
@@ -39,7 +33,7 @@ export async function dev() {
       console.log("Rebuilding...");
       build();
     } catch (error: any) {
-      console.error("✗ Build failed:", error?.message || error);
+      console.error("\u2717 Build failed:", error?.message || error);
     } finally {
       setTimeout(() => {
         rebuilding = false;
@@ -48,15 +42,18 @@ export async function dev() {
   };
 
   try {
-    // prefer chokidar if installed
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const chokidar = require("chokidar");
-    chokidar.watch(["**/*.easys"], { cwd: root, ignoreInitial: true }).on("change", rebuild);
+    chokidar
+      .watch(["**/*.easys"], { cwd: project.root, ignoreInitial: true })
+      .on("change", rebuild);
   } catch {
-    fs.watch(watchTarget, { recursive: true }, (_event, filename) => {
-      if (filename && String(filename).endsWith(".easys")) {
-        rebuild();
-      }
-    });
+    if (fs.existsSync(watchTarget)) {
+      fs.watch(watchTarget, { recursive: true }, (_event, filename) => {
+        if (filename && String(filename).endsWith(".easys")) {
+          rebuild();
+        }
+      });
+    }
   }
 }

@@ -16,6 +16,8 @@ export function init(name?: string) {
 
   fs.mkdirSync(root);
   fs.mkdirSync(path.join(root, "src"));
+  fs.mkdirSync(path.join(root, "src", "pages"));
+  fs.mkdirSync(path.join(root, "src", "components"));
   fs.mkdirSync(path.join(root, "public"));
   fs.mkdirSync(path.join(root, "dist"));
   fs.mkdirSync(path.join(root, "dist", "assets"));
@@ -43,14 +45,26 @@ export function init(name?: string) {
   fs.writeFileSync(
     path.join(root, "easys.config"),
     `{
+  "appName": "Hello",
   "entry": "src/App.easys",
-  "output": "dist"
+  "output": "dist",
+  "srcDir": "src",
+  "publicDir": "public"
 }
 `,
   );
 
   console.log(`
 ✓ Created EasyS project: ${name}
+
+  ${name}/
+  ─── easys.config
+  ─── src/
+  │   ─── App.easys
+  │   ─── pages/
+  │   ─── components/
+  ─── public/
+  ─── dist/
 
 Run:
 
