@@ -10,7 +10,7 @@ export class JsGenerator {
 
     const runtime = this.runtimeGenerator.generate();
     const state = this.generateState(program);
-    const render = this.generateRender(program);
+    const routes = this.generateRoutes(program);
 
     this.actionCounter = 0;
     const actions = this.generateActions(program);
@@ -21,7 +21,7 @@ ${runtime}
 
 ${state}
 
-${render}
+${routes}
 
 ${actions}
 
@@ -32,11 +32,10 @@ window.EasyRuntime.mount();
   }
 
   private generateState(program: AST.ProgramNode) {
-    const page = program.app.pages[0];
-
     let result = "window.EasyRuntime.state={";
 
-    if (page.state) {
+    for (const page of program.app.pages) {
+      if (!page.state) continue;
       for (const variable of page.state.variables) {
         result += `\n${variable.name}: ${this.expression(variable.value)},`;
       }
@@ -47,22 +46,27 @@ window.EasyRuntime.mount();
     return result;
   }
 
-  private generateRender(program: AST.ProgramNode) {
-    const page = program.app.pages[0];
-
+  private generateRoutes(program: AST.ProgramNode) {
     this.actionCounter = 0;
 
-    let html = "";
+    let routes = "window.EasyRoutes = {\n";
 
-    for (const node of page.body) {
-      html += this.node(node);
+    for (const page of program.app.pages) {
+      let html = "";
+      for (const node of page.body) {
+        html += this.node(node);
+      }
+      routes += `  ${JSON.stringify(page.route)}: (state)=>{\nreturn \`${html}\`;\n},\n`;
     }
 
-    return `
-window.EASY_RENDER = (state)=>{
-return \`${html}\`;
-};
-`;
+    routes += "};\n";
+
+    const first = program.app.pages[0];
+    if (first) {
+      routes += `window.EASY_RENDER = window.EasyRoutes[${JSON.stringify(first.route)}];\n`;
+    }
+
+    return routes;
   }
 
   private node(node: AST.UINode, loopVars: Set<string> = new Set()): string {
@@ -75,6 +79,9 @@ return \`${html}\`;
 
       case "Button":
         return this.button(node);
+
+      case "Link":
+        return `<a href="${node.route}" data-easys-link="${node.route}">${node.text}</a>`;
 
       case "Container": {
         const classAttr = node.className ? ` class=\"${node.className}\"` : "";
@@ -170,11 +177,19 @@ return \`${html}\`;
       if (node.type === "Button" && node.action) {
         const id = `action_${this.actionCounter++}`;
 
-        result += `
+        if (node.action.type === "Navigate") {
+          result += `
+window.EasyRuntime.actions["${id}"] = (state)=>{
+window.EasyRuntime.navigate(${JSON.stringify(node.action.route)});
+};
+`;
+        } else {
+          result += `
 window.EasyRuntime.actions["${id}"] = (state)=>{
 ${this.action(node.action)}
 };
 `;
+        }
       }
 
       if (node.type === "Container" || node.type === "Section") {
@@ -239,7 +254,7 @@ window.EasyRuntime.render();
     return result;
   }
 
-  private action(action: AST.ActionNode) {
+  private action(action: AST.StatementsActionNode) {
     let result = "";
 
     for (const expr of action.statements) {
