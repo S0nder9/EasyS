@@ -75,6 +75,7 @@ export class Parser {
     this.skipNewLines();
     this.expectKeyword("page");
     const name = this.expectIdentifier();
+    const route = this.expectString();
     this.expect(TokenType.OpenBrace);
     let state: AST.StateNode | undefined;
     const body: AST.UINode[] = [];
@@ -97,6 +98,7 @@ export class Parser {
     return {
       type: "Page",
       name,
+      route,
       state,
       body,
     };
@@ -131,6 +133,8 @@ export class Parser {
         return this.parseIf();
       case "for":
         return this.parseFor();
+      case "link":
+        return this.parseLink();
       default:
         if (
           token.type === TokenType.Identifier &&
@@ -178,6 +182,13 @@ export class Parser {
   private parseAction(): AST.ActionNode {
     this.expectKeyword("action");
     this.expect(TokenType.OpenBrace);
+    this.skipNewLines();
+    if (this.current().value === "navigate") {
+      const navigate = this.parseNavigate();
+      this.skipNewLines();
+      this.expect(TokenType.CloseBrace);
+      return navigate;
+    }
     const statements: AST.Expression[] = [];
     while (!this.check(TokenType.CloseBrace)) {
       this.skipNewLines();
@@ -190,6 +201,23 @@ export class Parser {
     return {
       type: "Action",
       statements,
+    };
+  }
+  private parseNavigate(): AST.NavigateActionNode {
+    this.expectKeyword("navigate");
+    return {
+      type: "Navigate",
+      route: this.expectString(),
+    };
+  }
+  private parseLink(): AST.LinkNode {
+    this.expectKeyword("link");
+    const text = this.expectString();
+    const route = this.expectString();
+    return {
+      type: "Link",
+      text,
+      route,
     };
   }
   private parseContainer(): AST.ContainerNode {
