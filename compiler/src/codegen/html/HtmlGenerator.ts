@@ -108,7 +108,7 @@ ${escapeHtml(node.text)}
   }
 
   private generateLink(node: AST.LinkNode) {
-    return `<a href="${escapeHtml(node.url)}">${escapeHtml(node.text)}</a>`;
+    return `<a href="${escapeHtml(node.route)}" data-easys-link="${escapeHtml(node.route)}">${escapeHtml(node.text)}</a>`;
   }
 
   private generateIf(node: AST.IfNode): string {
