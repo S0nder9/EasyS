@@ -22,8 +22,7 @@ heading title
 }
 
 
-
-page Home {
+page Home "/" {
 
 
 ui {
@@ -50,5 +49,6 @@ Card("Hello")
 
   expect(container.type).toBe("Container");
 
+  // @ts-ignore
   expect(container.children[0].type).toBe("Heading");
 });

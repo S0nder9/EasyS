@@ -10,7 +10,7 @@ test("generates html", () => {
 app Hello {
 
 
-page Home {
+page Home "/" {
 
 
 ui {
@@ -55,7 +55,7 @@ test("generates reactive counter output", () => {
 
 app Counter {
 
-page Home {
+page Home "/" {
 
 state {
 

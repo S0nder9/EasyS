@@ -11,7 +11,7 @@ test("accepts valid counter", () => {
 
 app Counter {
 
-page Home {
+page Home "/" {
 
 state {
 
@@ -43,16 +43,13 @@ test("rejects unknown variable", () => {
 
 app Test {
 
-page Home {
-
+page Home "/" {
 
 ui {
 
 text hello
 
-
 }
-
 
 }
 
@@ -64,5 +61,5 @@ text hello
 
   expect(() => {
     new Analyzer().analyze(ast);
-  }).toThrow("Unknown variable");
+  }).toThrow(/Unknown variable/);
 });

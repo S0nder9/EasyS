@@ -64,6 +64,7 @@ app Test {
 page Home "/" {
 ui {
 heading "Home"
+link "About" "/about"
 }
 }
 page About "/about" {
@@ -80,5 +81,6 @@ heading "About"
     expect(output.js).toContain("EasyRoutes");
     expect(output.js).toContain('"/about"');
     expect(output.html).toContain("data-easys-link");
+    expect(output.js).toContain("data-easys-link");
   });
 });

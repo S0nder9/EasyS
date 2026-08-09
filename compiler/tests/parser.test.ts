@@ -7,7 +7,7 @@ describe("EasyS Parser", () => {
 
 app Test {
 
-page Home {
+page Home "/" {
 
 ui {
 
@@ -28,5 +28,6 @@ heading "Hello"
   expect(ast.app.name).toBe("Test");
 
   expect(ast.app.pages[0].name).toBe("Home");
+  expect(ast.app.pages[0].route).toBe("/");
   });
 });

@@ -6,7 +6,7 @@ describe("EasyS control flow", () => {
   test("parses if else", () => {
     const source = `
 app Test {
-page Home {
+page Home "/" {
 ui {
 if loggedIn {
 heading "Yes"
@@ -32,7 +32,7 @@ heading "No"
   test("parses for", () => {
     const source = `
 app Test {
-page Home {
+page Home "/" {
 ui {
 for user in users {
 text user.name
@@ -54,7 +54,7 @@ text user.name
   test("analyzes control flow with state", () => {
     const source = `
 app Test {
-page Home {
+page Home "/" {
 state {
 loggedIn: boolean = true
 users: User[] = []
@@ -80,7 +80,7 @@ text user.name
   test("generates js for if and for", () => {
     const source = `
 app Test {
-page Home {
+page Home "/" {
 state {
 loggedIn: boolean = true
 users: User[] = []
