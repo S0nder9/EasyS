@@ -76,8 +76,10 @@ return \`${html}\`;
       case "Button":
         return this.button(node);
 
-      case "Container":
-        return `<div>${node.children.map((child) => this.node(child, loopVars)).join("")}</div>`;
+      case "Container": {
+        const classAttr = node.className ? ` class=\"${node.className}\"` : "";
+        return `<div${classAttr}>${node.children.map((child) => this.node(child, loopVars)).join("")}</div>`;
+      }
 
       case "Section":
         return `<section>${node.children.map((child) => this.node(child, loopVars)).join("")}</section>`;

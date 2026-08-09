@@ -44,12 +44,14 @@ export class HtmlGenerator {
       case "Button":
         return this.generateButton(node);
 
-      case "Container":
+      case "Container": {
+        const classAttr = node.className ? ` class="${node.className}"` : "";
         return `
-<div>
+<div${classAttr}>
 ${node.children.map((child) => this.generateNode(child)).join("\n")}
 </div>
 `;
+      }
 
       case "Section":
         return `
