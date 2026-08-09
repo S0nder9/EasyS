@@ -58,6 +58,12 @@ ${node.children.map((child) => this.generateNode(child)).join("\n")}
 </section>
 `;
 
+      case "If":
+        return this.generateIf(node);
+
+      case "For":
+        return this.generateFor(node);
+
       case "Image":
         return this.generateImage(node);
 
@@ -101,6 +107,51 @@ ${escapeHtml(node.text)}
 
   private generateLink(node: AST.LinkNode) {
     return `<a href="${escapeHtml(node.url)}">${escapeHtml(node.text)}</a>`;
+  }
+
+  private generateIf(node: AST.IfNode): string {
+    const thenHtml = node.thenBranch
+      .map((n) => this.generateNode(n))
+      .join("\n");
+
+    const elseHtml = node.elseBranch
+      ? node.elseBranch.map((n) => this.generateNode(n)).join("\n")
+      : "";
+
+    return `
+<div data-easys-if="${this.expressionName(node.condition)}">
+${thenHtml}
+</div>
+${
+  node.elseBranch
+    ? `<div data-easys-else="${this.expressionName(node.condition)}">
+${elseHtml}
+</div>`
+    : ""
+}
+`;
+  }
+
+  private generateFor(node: AST.ForNode): string {
+    const bodyHtml = node.body.map((n) => this.generateNode(n)).join("\n");
+
+    return `
+<div data-easys-for="${node.variable}" data-easys-list="${this.expressionName(node.iterable)}">
+${bodyHtml}
+</div>
+`;
+  }
+
+  private expressionName(expression: AST.Expression): string {
+    if (expression.type === "Identifier") {
+      return expression.name;
+    }
+
+    if (expression.type === "Member") {
+      return `${this.expressionName(expression.object)}.${expression.property}`;
+    }
+
+    return "";
   }
 
   private expressionToHtml(expression: AST.Expression) {

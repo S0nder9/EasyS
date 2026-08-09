@@ -65,42 +65,82 @@ return \`${html}\`;
 `;
   }
 
-  private node(node: AST.UINode): string {
+  private node(node: AST.UINode, loopVars: Set<string> = new Set()): string {
     switch (node.type) {
       case "Text":
-        return this.text(node);
+        return this.text(node, loopVars);
 
       case "Heading":
-        return this.heading(node);
+        return this.heading(node, loopVars);
 
       case "Button":
         return this.button(node);
 
       case "Container":
-        return `<div>${node.children.map((child) => this.node(child)).join("")}</div>`;
+        return `<div>${node.children.map((child) => this.node(child, loopVars)).join("")}</div>`;
 
       case "Section":
-        return `<section>${node.children.map((child) => this.node(child)).join("")}</section>`;
+        return `<section>${node.children.map((child) => this.node(child, loopVars)).join("")}</section>`;
+
+      case "If":
+        return this.ifNode(node, loopVars);
+
+      case "For":
+        return this.forNode(node, loopVars);
 
       default:
         return "";
     }
   }
 
-  private text(node: AST.TextNode) {
-    if (node.expression.type === "Identifier") {
-      return `<p>\${state.${node.expression.name}}</p>`;
-    }
+  private ifNode(node: AST.IfNode, loopVars: Set<string>): string {
+    const condition = this.expression(node.condition, loopVars);
+    const thenHtml = node.thenBranch
+      .map((child) => this.node(child, loopVars))
+      .join("");
+    const elseHtml = (node.elseBranch || [])
+      .map((child) => this.node(child, loopVars))
+      .join("");
 
-    return `<p>${this.expression(node.expression)}</p>`;
+    return `\${${condition} ? \`${thenHtml}\` : \`${elseHtml}\`}`;
   }
 
-  private heading(node: AST.HeadingNode) {
-    if (node.expression.type === "Identifier") {
-      return `<h${node.level}>\${state.${node.expression.name}}</h${node.level}>`;
+  private forNode(node: AST.ForNode, loopVars: Set<string>): string {
+    const iterable = this.expression(node.iterable, loopVars);
+    const nextVars = new Set(loopVars);
+    nextVars.add(node.variable);
+
+    const bodyHtml = node.body
+      .map((child) => this.node(child, nextVars))
+      .join("");
+
+    return `\${(${iterable} || []).map((${node.variable}) => \`${bodyHtml}\`).join("")}`;
+  }
+
+  private text(node: AST.TextNode, loopVars: Set<string>) {
+    if (node.expression.type === "Identifier" || node.expression.type === "Member") {
+      const value = this.expression(node.expression, loopVars);
+      return `<p>\${${value}}</p>`;
     }
 
-    return `<h${node.level}>${this.expression(node.expression)}</h${node.level}>`;
+    if (node.expression.type === "Literal") {
+      return `<p>${String(node.expression.value)}</p>`;
+    }
+
+    return `<p></p>`;
+  }
+
+  private heading(node: AST.HeadingNode, loopVars: Set<string>) {
+    if (node.expression.type === "Identifier" || node.expression.type === "Member") {
+      const value = this.expression(node.expression, loopVars);
+      return `<h${node.level}>\${${value}}</h${node.level}>`;
+    }
+
+    if (node.expression.type === "Literal") {
+      return `<h${node.level}>${String(node.expression.value)}</h${node.level}>`;
+    }
+
+    return `<h${node.level}></h${node.level}>`;
   }
 
   private button(node: AST.ButtonNode) {
@@ -138,6 +178,17 @@ ${this.action(node.action)}
       if (node.type === "Container" || node.type === "Section") {
         result += this.collectActions(node.children);
       }
+
+      if (node.type === "If") {
+        result += this.collectActions(node.thenBranch);
+        if (node.elseBranch) {
+          result += this.collectActions(node.elseBranch);
+        }
+      }
+
+      if (node.type === "For") {
+        result += this.collectActions(node.body);
+      }
     }
 
     return result;
@@ -165,6 +216,17 @@ window.EasyRuntime.render();
         if (node.type === "Container" || node.type === "Section") {
           walk(node.children);
         }
+
+        if (node.type === "If") {
+          walk(node.thenBranch);
+          if (node.elseBranch) {
+            walk(node.elseBranch);
+          }
+        }
+
+        if (node.type === "For") {
+          walk(node.body);
+        }
       }
     };
 
@@ -187,16 +249,31 @@ window.EasyRuntime.render();
     return result;
   }
 
-  private expression(expr: AST.Expression): string {
+  private expression(
+    expr: AST.Expression,
+    loopVars: Set<string> = new Set(),
+  ): string {
     switch (expr.type) {
       case "Literal":
+        if (Array.isArray(expr.value)) {
+          return JSON.stringify(expr.value);
+        }
+        if (typeof expr.value === "string") {
+          return JSON.stringify(expr.value);
+        }
         return String(expr.value);
 
       case "Identifier":
+        if (loopVars.has(expr.name)) {
+          return expr.name;
+        }
         return `state.${expr.name}`;
 
+      case "Member":
+        return `${this.expression(expr.object, loopVars)}.${expr.property}`;
+
       case "Binary":
-        return `${this.expression(expr.left)} ${expr.operator} ${this.expression(expr.right)};`;
+        return `${this.expression(expr.left, loopVars)} ${expr.operator} ${this.expression(expr.right, loopVars)};`;
 
       default:
         return "";
