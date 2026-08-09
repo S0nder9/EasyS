@@ -127,6 +127,10 @@ export class Parser {
         return this.parseContainer();
       case "section":
         return this.parseSection();
+      case "if":
+        return this.parseIf();
+      case "for":
+        return this.parseFor();
       default:
         if (
           token.type === TokenType.Identifier &&
@@ -284,6 +288,62 @@ export class Parser {
       body,
     };
   }
+  private parseIf(): AST.IfNode {
+    this.expectKeyword("if");
+    const condition = this.parseExpression();
+    this.expect(TokenType.OpenBrace);
+    const thenBranch: AST.UINode[] = [];
+    while (!this.check(TokenType.CloseBrace)) {
+      this.skipNewLines();
+      if (this.check(TokenType.CloseBrace)) {
+        break;
+      }
+      thenBranch.push(this.parseElement());
+    }
+    this.expect(TokenType.CloseBrace);
+    let elseBranch: AST.UINode[] | undefined;
+    this.skipNewLines();
+    if (this.match("else")) {
+      this.expect(TokenType.OpenBrace);
+      elseBranch = [];
+      while (!this.check(TokenType.CloseBrace)) {
+        this.skipNewLines();
+        if (this.check(TokenType.CloseBrace)) {
+          break;
+        }
+        elseBranch.push(this.parseElement());
+      }
+      this.expect(TokenType.CloseBrace);
+    }
+    return {
+      type: "If",
+      condition,
+      thenBranch,
+      elseBranch,
+    };
+  }
+  private parseFor(): AST.ForNode {
+    this.expectKeyword("for");
+    const variable = this.expectIdentifier();
+    this.expectKeyword("in");
+    const iterable = this.parseExpression();
+    this.expect(TokenType.OpenBrace);
+    const body: AST.UINode[] = [];
+    while (!this.check(TokenType.CloseBrace)) {
+      this.skipNewLines();
+      if (this.check(TokenType.CloseBrace)) {
+        break;
+      }
+      body.push(this.parseElement());
+    }
+    this.expect(TokenType.CloseBrace);
+    return {
+      type: "For",
+      variable,
+      iterable,
+      body,
+    };
+  }
   private parseState(): AST.StateNode {
     this.expect(TokenType.OpenBrace);
     const variables: AST.VariableNode[] = [];
@@ -294,7 +354,12 @@ export class Parser {
       }
       const name = this.expectIdentifier();
       this.expect(TokenType.Colon);
-      const dataType = this.expectIdentifier();
+      let dataType = this.expectIdentifier();
+      if (this.check(TokenType.OpenBracket)) {
+        this.advance();
+        this.expect(TokenType.CloseBracket);
+        dataType += "[]";
+      }
       this.expect(TokenType.Equal);
       const value = this.parseExpression();
       variables.push({
@@ -338,6 +403,33 @@ export class Parser {
     return left;
   }
   private parsePrimaryExpression(): AST.Expression {
+    if (this.check(TokenType.OpenBracket)) {
+      this.advance();
+      const elements: AST.Expression[] = [];
+      while (!this.check(TokenType.CloseBracket)) {
+        this.skipNewLines();
+        if (this.check(TokenType.CloseBracket)) {
+          break;
+        }
+        elements.push(this.parseExpression());
+        this.skipNewLines();
+        if (this.check(TokenType.Comma)) {
+          this.advance();
+          continue;
+        }
+        break;
+      }
+      this.expect(TokenType.CloseBracket);
+      return {
+        type: "Literal",
+        value: elements.map((el) => {
+          if (el.type === "Literal") {
+            return el.value;
+          }
+          return null;
+        }) as any,
+      };
+    }
     const token = this.advance();
     if (token.type === TokenType.String) {
       return {
