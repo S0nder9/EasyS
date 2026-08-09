@@ -12,19 +12,12 @@ export class BuildGenerator {
   private js = new JsGenerator();
 
   generate(program: AST.ProgramNode) {
-    for (const component of program.components) {
-        // @ts-ignore
-      this.registry.register(component);
-    }
-// @ts-ignore
-    const expanded = this.expander.expandProgram(program);
-
     return {
-      html: this.html.generate(expanded),
+      html: this.html.generate(program),
 
-      css: this.css.generate(expanded.styles),
+      css: this.css.generate(program.styles),
 
-      js: this.js.generate(expanded),
+      js: this.js.generate(program),
     };
   }
 }
