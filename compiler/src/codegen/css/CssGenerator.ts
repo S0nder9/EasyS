@@ -36,16 +36,19 @@ ${properties}
 `;
   }
 
-  private generateProperty(key: string, value: string) {
+  private generateProperty(key: string, value: any) {
     const css = CssPropertyMap[key];
 
     if (!css) {
       return "";
     }
 
-    let finalValue = value;
+    let finalValue =
+      value && typeof value === "object" && "value" in value
+        ? String(value.value)
+        : String(value);
 
-    if (this.needsPx(key, value)) {
+    if (this.needsPx(key, finalValue)) {
       finalValue += "px";
     }
 

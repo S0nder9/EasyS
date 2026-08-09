@@ -65,6 +65,16 @@ export class ComponentExpander {
       };
     }
 
+    if (node.type === "Container" || node.type === "Section") {
+      return {
+        ...node,
+
+        children: (node.children || []).map((child: any) =>
+          this.replaceNode(child, params, args),
+        ),
+      };
+    }
+
     return node;
   }
 
