@@ -51,6 +51,8 @@ export const Keywords = new Set([
 
 "import",
 
+"from",
+
 
 "navigate"
 

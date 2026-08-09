@@ -1,8 +1,8 @@
 import "./styles/theme.easys"
-import Header from "./components/Header.easys"
-import Footer from "./components/Footer.easys"
-import FeatureCard from "./components/FeatureCard.easys"
-import ProjectCard from "./components/ProjectCard.easys"
+import "./components/Header.easys"
+import "./components/Footer.easys"
+import "./components/FeatureCard.easys"
+import "./components/ProjectCard.easys"
 
 app EasySDemo {
 
@@ -90,7 +90,7 @@ app EasySDemo {
           heading "About EasyS"
           text "EasyS is a custom programming language for creating websites."
           text "No React. No frameworks. Only EasyS to HTML CSS JS."
-          text "Pipeline: Lexer → Parser → AST → Semantic → Components → Codegen"
+          text "Pipeline: Lexer to Parser to AST to Semantic to Components to Codegen"
         }
       }
 
