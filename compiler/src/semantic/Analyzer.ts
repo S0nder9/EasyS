@@ -75,6 +75,38 @@ export class Analyzer {
         }
 
         break;
+
+      case "If":
+        this.checkExpression(node.condition, scope);
+
+        for (const child of node.thenBranch) {
+          this.visitNode(child, scope);
+        }
+
+        if (node.elseBranch) {
+          for (const child of node.elseBranch) {
+            this.visitNode(child, scope);
+          }
+        }
+
+        break;
+
+      case "For": {
+        this.checkExpression(node.iterable, scope);
+
+        const loopScope = new Scope(scope);
+
+        loopScope.define({
+          name: node.variable,
+          type: EasySType.Object,
+        });
+
+        for (const child of node.body) {
+          this.visitNode(child, loopScope);
+        }
+
+        break;
+      }
     }
   }
 
@@ -87,6 +119,8 @@ export class Analyzer {
   private checkExpression(expr: AST.Expression, scope: Scope): EasySType {
     switch (expr.type) {
       case "Literal":
+        if (Array.isArray(expr.value)) return EasySType.Array;
+
         if (typeof expr.value === "string") return EasySType.Text;
 
         if (typeof expr.value === "number") return EasySType.Number;
@@ -129,13 +163,21 @@ export class Analyzer {
     return EasySType.Unknown;
   }
 
-  private checkProperty(type: EasySType, property: string): never {
+  private checkProperty(type: EasySType, property: string): EasySType {
+    if (type === EasySType.Object || type === EasySType.Array || type === EasySType.Unknown) {
+      return EasySType.Unknown;
+    }
+
     throw new SemanticError(
       `Property '${property}' does not exist on type '${type}'`,
     );
   }
 
   private resolveType(type: string) {
+    if (type.endsWith("[]")) {
+      return EasySType.Array;
+    }
+
     switch (type) {
       case "string":
         return EasySType.Text;
