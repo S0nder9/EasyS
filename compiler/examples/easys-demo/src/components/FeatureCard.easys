@@ -1,0 +1,6 @@
+component FeatureCard(title, description) {
+  container class CardStyle {
+    heading title
+    text description
+  }
+}

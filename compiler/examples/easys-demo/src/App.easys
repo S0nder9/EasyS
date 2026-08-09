@@ -1,0 +1,258 @@
+style HeaderStyle {
+  padding: 20
+  background: "#111111"
+  color: "#ffffff"
+}
+
+style HeroStyle {
+  padding: 40
+  radius: 12
+  background: "#eeeeee"
+}
+
+style CardStyle {
+  padding: 20
+  radius: 12
+  background: "#ffffff"
+}
+
+style ProjectCardStyle {
+  padding: 16
+  radius: 10
+  background: "#f8f8f8"
+}
+
+style SectionStyle {
+  padding: 24
+  margin: 12
+  background: "#ffffff"
+}
+
+style FooterStyle {
+  padding: 30
+  margin: 20
+  background: "#f0f0f0"
+}
+
+component Header() {
+  container class HeaderStyle {
+    heading "EasyS"
+    link "Home" "/"
+    link "About" "/about"
+    link "Projects" "/projects"
+    link "Contact" "/contact"
+  }
+}
+
+component Footer() {
+  container class FooterStyle {
+    text "Built with EasyS"
+    text "EasyS Demo Website"
+  }
+}
+
+component FeatureCard(title, description) {
+  container class CardStyle {
+    heading title
+    text description
+  }
+}
+
+component ProjectCard(title, description) {
+  container class ProjectCardStyle {
+    heading title
+    text description
+  }
+}
+
+app EasySDemo {
+
+  page Home "/" {
+
+    state {
+      count: number = 0
+      loggedIn: boolean = true
+      features: string[] = ["Components", "State", "Routing", "Control flow"]
+    }
+
+    ui {
+      Header()
+
+      section {
+        container class HeroStyle {
+          heading "EasyS Programming Language"
+          text "A simple declarative language that compiles into HTML CSS and JavaScript"
+
+          text count
+
+          button "Increase counter" {
+            action {
+              count += 1
+            }
+          }
+        }
+      }
+
+      section {
+        heading "Features"
+
+        FeatureCard(
+          "Components",
+          "Reusable UI blocks"
+        )
+
+        FeatureCard(
+          "State",
+          "Reactive variables"
+        )
+
+        FeatureCard(
+          "Routing",
+          "History API navigation"
+        )
+
+        FeatureCard(
+          "Control flow",
+          "if else and for loops"
+        )
+      }
+
+      section {
+        heading "Status"
+
+        if loggedIn {
+          heading "Welcome back!"
+          text "You are exploring the EasyS demo"
+        } else {
+          heading "Please login"
+          text "Demo mode is limited"
+        }
+      }
+
+      section {
+        heading "Feature list"
+
+        for feature in features {
+          text feature
+        }
+      }
+
+      Footer()
+    }
+  }
+
+  page About "/about" {
+
+    ui {
+      Header()
+
+      section {
+        container class SectionStyle {
+          heading "About EasyS"
+          text "EasyS is a custom programming language for creating websites."
+          text "No React. No frameworks. Only EasyS to HTML CSS JS."
+          text "Pipeline: Lexer Parser AST Semantic Components Codegen"
+        }
+      }
+
+      section {
+        heading "Goals"
+        text "Build real small sites: portfolio, landing, todo, catalogs"
+        link "Back to Home" "/"
+      }
+
+      Footer()
+    }
+  }
+
+  page Projects "/projects" {
+
+    state {
+      projects: string[] = ["Compiler", "Runtime", "CLI", "Router"]
+    }
+
+    ui {
+      Header()
+
+      section {
+        heading "Projects"
+
+        ProjectCard(
+          "Compiler",
+          "EasyS compiler written in TypeScript"
+        )
+
+        ProjectCard(
+          "Runtime",
+          "Custom browser runtime with reactive updates"
+        )
+
+        ProjectCard(
+          "CLI",
+          "easys init build dev check format"
+        )
+
+        ProjectCard(
+          "Router",
+          "SPA routing via History API"
+        )
+      }
+
+      section {
+        heading "Project names"
+
+        for project in projects {
+          text project
+        }
+      }
+
+      section {
+        button "Go Home" {
+          action {
+            navigate "/"
+          }
+        }
+      }
+
+      Footer()
+    }
+  }
+
+  page Contact "/contact" {
+
+    state {
+      sent: boolean = false
+    }
+
+    ui {
+      Header()
+
+      section {
+        container class SectionStyle {
+          heading "Contact"
+          text "Demo contact page. Forms (input bind) come in a later language version."
+
+          button "Mark as sent" {
+            action {
+              sent = true
+            }
+          }
+
+          if sent {
+            text "Message sent!"
+          } else {
+            text "Waiting for your message..."
+          }
+        }
+      }
+
+      section {
+        link "Home" "/"
+        link "About" "/about"
+        link "Projects" "/projects"
+      }
+
+      Footer()
+    }
+  }
+}

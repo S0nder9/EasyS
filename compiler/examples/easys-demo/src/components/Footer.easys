@@ -1,0 +1,6 @@
+component Footer() {
+  section {
+    text "Built with EasyS"
+    text "EasyS Demo Website"
+  }
+}

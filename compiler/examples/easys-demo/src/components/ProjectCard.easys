@@ -1,0 +1,6 @@
+component ProjectCard(title, description) {
+  container class ProjectCardStyle {
+    heading title
+    text description
+  }
+}

@@ -1,0 +1,9 @@
+component Header() {
+  container class HeaderStyle {
+    heading "EasyS"
+    link "Home" "/"
+    link "About" "/about"
+    link "Projects" "/projects"
+    link "Contact" "/contact"
+  }
+}
