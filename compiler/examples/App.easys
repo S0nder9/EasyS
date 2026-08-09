@@ -1,7 +1,7 @@
 app Counter {
 
 
-page Home {
+page Home "/" {
 
 
 state {

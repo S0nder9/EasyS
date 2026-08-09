@@ -111,6 +111,10 @@ export class Analyzer {
   }
 
   private visitAction(action: AST.ActionNode, scope: Scope) {
+    if (action.type === "Navigate") {
+      return;
+    }
+
     for (const statement of action.statements) {
       this.checkExpression(statement, scope);
     }

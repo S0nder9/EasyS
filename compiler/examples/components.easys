@@ -20,7 +20,7 @@ text description
 
 
 
-page Home {
+page Home "/" {
 
 
 ui {
