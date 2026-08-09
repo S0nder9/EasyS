@@ -23,8 +23,6 @@ ${body}
 
 </div>
 
-<script src="runtime.js"></script>
-
 <script src="app.js"></script>
 
 </body>
