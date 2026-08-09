@@ -1,0 +1,97 @@
+style CardStyle {
+  padding: 20
+  radius: 12
+  background: "#f5f5f5"
+}
+
+style TitleStyle {
+  padding: 8
+  background: "#111"
+}
+
+component FeatureCard(title, description) {
+  container class CardStyle {
+    heading title
+    text description
+  }
+}
+
+app FullDemo {
+
+  page Home {
+
+    state {
+      count: number = 0
+      loggedIn: boolean = true
+      items: string[] = ["Apple", "Banana", "Cherry"]
+      users: User[] = []
+    }
+
+    ui {
+
+      heading "EasyS Full Demo"
+
+      text "All current language features in one file"
+
+      section {
+        heading "1. Components"
+
+        FeatureCard(
+          "EasyS",
+          "Declarative UI language"
+        )
+
+        FeatureCard(
+          "Compiler",
+          "Lexer to Parser to HTML CSS JS"
+        )
+      }
+
+      section {
+        heading "2. State and actions"
+
+        text count
+
+        button "+" {
+          action {
+            count += 1
+          }
+        }
+      }
+
+      section {
+        heading "3. Conditionals if else"
+
+        if loggedIn {
+          heading "Welcome back!"
+          text "You are logged in"
+        } else {
+          heading "Please login"
+          text "Access is limited"
+        }
+      }
+
+      section {
+        heading "4. Loops for"
+
+        for item in items {
+          text item
+        }
+
+        for user in users {
+          text user.name
+        }
+      }
+
+      section {
+        heading "5. Layout"
+
+        container {
+          text "Inside a container"
+          button "Click me" {}
+        }
+      }
+
+    }
+  }
+}
