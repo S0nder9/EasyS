@@ -75,6 +75,31 @@ export class ComponentExpander {
       };
     }
 
+    if (node.type === "If") {
+      return {
+        ...node,
+        condition: this.replaceExpression(node.condition, params, args),
+        thenBranch: (node.thenBranch || []).map((child: any) =>
+          this.replaceNode(child, params, args),
+        ),
+        elseBranch: node.elseBranch
+          ? node.elseBranch.map((child: any) =>
+              this.replaceNode(child, params, args),
+            )
+          : undefined,
+      };
+    }
+
+    if (node.type === "For") {
+      return {
+        ...node,
+        iterable: this.replaceExpression(node.iterable, params, args),
+        body: (node.body || []).map((child: any) =>
+          this.replaceNode(child, params, args),
+        ),
+      };
+    }
+
     return node;
   }
 
@@ -89,6 +114,27 @@ export class ComponentExpander {
           ...node,
 
           children: node.children.flatMap((child) => this.expandNode(child)),
+        },
+      ];
+    }
+
+    if (node.type === "If") {
+      return [
+        {
+          ...node,
+          thenBranch: node.thenBranch.flatMap((child) => this.expandNode(child)),
+          elseBranch: node.elseBranch
+            ? node.elseBranch.flatMap((child) => this.expandNode(child))
+            : undefined,
+        },
+      ];
+    }
+
+    if (node.type === "For") {
+      return [
+        {
+          ...node,
+          body: node.body.flatMap((child) => this.expandNode(child)),
         },
       ];
     }
