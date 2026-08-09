@@ -1,0 +1,43 @@
+style HeaderStyle {
+  padding: 20
+  background: "#0f172a"
+  color: "#f8fafc"
+}
+
+style HeroStyle {
+  padding: 48
+  radius: 16
+  background: "#e2e8f0"
+}
+
+style CardStyle {
+  padding: 24
+  radius: 14
+  background: "#ffffff"
+}
+
+style ProjectCardStyle {
+  padding: 20
+  radius: 12
+  background: "#f8fafc"
+}
+
+style SectionStyle {
+  padding: 28
+  margin: 16
+  background: "#ffffff"
+}
+
+style FooterStyle {
+  padding: 32
+  margin: 24
+  background: "#0f172a"
+  color: "#e2e8f0"
+}
+
+style AccentStyle {
+  padding: 12
+  radius: 8
+  background: "#2563eb"
+  color: "#ffffff"
+}

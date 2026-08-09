@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 
-import { Lexer, Parser, Analyzer } from "../../index";
+import { Analyzer } from "../../index";
 import { findProject } from "../../project/findProject";
+import { loadProgram } from "../../project/ModuleLoader";
 
 export function check(fileArg?: string) {
   try {
@@ -19,10 +20,7 @@ export function check(fileArg?: string) {
       process.exit(1);
     }
 
-    const source = fs.readFileSync(entry, "utf-8");
-    const tokens = new Lexer(source, path.basename(entry)).tokenize();
-    const ast = new Parser(tokens).parse();
-
+    const ast = loadProgram(entry);
     new Analyzer().analyze(ast);
 
     console.log("\u2713 No errors");

@@ -1,6 +1,6 @@
 component Footer() {
-  section {
+  container class FooterStyle {
     text "Built with EasyS"
-    text "EasyS Demo Website"
+    text "Declarative UI language for the web"
   }
 }

@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 
-import { Lexer, Parser, Analyzer, HtmlGenerator } from "../../index";
+import { Analyzer, HtmlGenerator } from "../../index";
 import { findProject, tryFindProject } from "../../project/findProject";
 import { SourceResolver } from "../../project/SourceResolver";
+import { loadProgram } from "../../project/ModuleLoader";
 
 export function build(fileArg?: string) {
   let entry: string;
@@ -31,7 +32,7 @@ export function build(fileArg?: string) {
 
     if (!fs.existsSync(entry)) {
       console.error(`Entry file not found: ${entry}`);
-      console.error("Check easys.config \"entry\" field.");
+      console.error('Check easys.config "entry" field.');
       process.exit(1);
     }
   }
@@ -45,9 +46,7 @@ export function build(fileArg?: string) {
     console.log(`  found ${sources.length} .easys files under src/`);
   }
 
-  const source = fs.readFileSync(entry, "utf-8");
-  const tokens = new Lexer(source, path.basename(entry)).tokenize();
-  const ast = new Parser(tokens).parse();
+  const ast = loadProgram(entry);
 
   new Analyzer().analyze(ast);
 

@@ -19,3 +19,4 @@ export { ConfigParser } from "./config/ConfigParser";
 export { Project } from "./project/Project";
 export { findProject, tryFindProject } from "./project/findProject";
 export { SourceResolver } from "./project/SourceResolver";
+export { ModuleLoader, loadProgram } from "./project/ModuleLoader";
