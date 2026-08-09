@@ -126,6 +126,8 @@ export interface LinkNode {
 export interface ContainerNode {
   type: "Container";
 
+  className?: string;
+
   children: UINode[];
 }
 
@@ -192,7 +194,7 @@ export interface StyleNode {
 
   name: string;
 
-  properties: Record<string, string>;
+  properties: Record<string, any>;
 }
 
 export interface ImportNode {
