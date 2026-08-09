@@ -27,6 +27,8 @@ export interface PageNode {
 
   name: string;
 
+  route: string;
+
   state?: StateNode;
 
   body: UINode[];
@@ -120,7 +122,7 @@ export interface LinkNode {
 
   text: string;
 
-  url: string;
+  route: string;
 }
 
 export interface ContainerNode {
@@ -153,11 +155,19 @@ export interface VariableNode {
   value: Expression;
 }
 
-export interface ActionNode {
+export interface StatementsActionNode {
   type: "Action";
 
   statements: Expression[];
 }
+
+export interface NavigateActionNode {
+  type: "Navigate";
+
+  route: string;
+}
+
+export type ActionNode = StatementsActionNode | NavigateActionNode;
 
 export interface IfNode {
   type: "If";

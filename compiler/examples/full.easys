@@ -25,7 +25,7 @@ component FeatureCard(title, description) {
 
 app FullDemo {
 
-  page Home {
+  page Home "/" {
 
     state {
       count: number = 0
@@ -39,6 +39,12 @@ app FullDemo {
       container class TitleStyle {
         heading "EasyS Full Demo"
         text "All current language features in one file"
+      }
+
+      section {
+        heading "Navigation"
+        link "Home" "/"
+        link "About" "/about"
       }
 
       section {
@@ -100,6 +106,32 @@ app FullDemo {
         }
       }
 
+      section {
+        heading "6. Navigate action"
+        button "Go to About" {
+          action {
+            navigate "/about"
+          }
+        }
+      }
+
+    }
+  }
+
+  page About "/about" {
+    ui {
+      container class TitleStyle {
+        heading "About EasyS"
+        text "Routing via History API"
+      }
+
+      link "Back to Home" "/"
+
+      button "Home" {
+        action {
+          navigate "/"
+        }
+      }
     }
   }
 }
