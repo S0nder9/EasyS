@@ -1,0 +1,25 @@
+app Hello {
+
+
+page Home {
+
+
+ui {
+
+
+heading "Hello World"
+
+
+text "Welcome to EasyS"
+
+
+button "Click me" {}
+
+
+}
+
+
+}
+
+
+}

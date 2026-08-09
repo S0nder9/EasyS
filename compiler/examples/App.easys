@@ -1,0 +1,42 @@
+app Counter {
+
+
+page Home {
+
+
+state {
+
+count:number = 1
+
+}
+
+
+ui {
+
+
+heading "Привет, мир!"
+
+
+text count
+
+
+button "+" {
+
+
+action {
+
+count += 12
+
+}
+
+
+}
+
+
+}
+
+
+}
+
+
+}

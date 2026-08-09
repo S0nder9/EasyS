@@ -1,0 +1,42 @@
+app Counter {
+
+
+page Home {
+
+
+state {
+
+count:number=0
+
+}
+
+
+ui {
+
+
+heading "Counter"
+
+
+text count
+
+
+button "+" {
+
+
+action {
+
+count
+
+}
+
+
+}
+
+
+}
+
+
+}
+
+
+}

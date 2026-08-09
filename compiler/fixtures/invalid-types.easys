@@ -1,0 +1,36 @@
+app Test {
+
+
+page Home {
+
+
+state {
+
+count:number=0
+
+}
+
+
+ui {
+
+
+button "x" {
+
+
+action {
+
+count = "hello"
+
+}
+
+
+}
+
+
+}
+
+
+}
+
+
+}

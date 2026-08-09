@@ -1,0 +1,48 @@
+app Portfolio {
+
+
+component Card(title,description){
+
+
+container class Card {
+
+
+heading title
+
+
+text description
+
+
+}
+
+
+}
+
+
+
+page Home {
+
+
+ui {
+
+
+Card(
+"EasyS",
+"My programming language"
+)
+
+
+
+Card(
+"Compiler",
+"Transforms code"
+)
+
+
+}
+
+
+}
+
+
+}
