@@ -6,7 +6,14 @@ style CardStyle {
 
 style TitleStyle {
   padding: 8
-  background: "#111"
+  background: "#a11e1e"
+  color: "#ffffff"
+}
+
+style SectionStyle {
+  padding: 16
+  margin: 12
+  background: "#ffffff"
 }
 
 component FeatureCard(title, description) {
@@ -29,9 +36,10 @@ app FullDemo {
 
     ui {
 
-      heading "EasyS Full Demo"
-
-      text "All current language features in one file"
+      container class TitleStyle {
+        heading "EasyS Full Demo"
+        text "All current language features in one file"
+      }
 
       section {
         heading "1. Components"
@@ -86,8 +94,8 @@ app FullDemo {
       section {
         heading "5. Layout"
 
-        container {
-          text "Inside a container"
+        container class SectionStyle {
+          text "Inside a styled container"
           button "Click me" {}
         }
       }
