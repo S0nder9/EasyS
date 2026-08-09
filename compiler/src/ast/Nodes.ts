@@ -164,9 +164,9 @@ export interface IfNode {
 
   condition: Expression;
 
-  then: UINode[];
+  thenBranch: UINode[];
 
-  else?: UINode[];
+  elseBranch?: UINode[];
 }
 
 export interface ForNode {
