@@ -1,74 +1,34 @@
 #!/usr/bin/env node
 
-import fs from "fs";
-import path from "path";
-
-import { Lexer, Parser, Analyzer, HtmlGenerator } from "../index";
-
-function resolveInputFile(): string {
-  const arg = process.argv[3];
-
-  if (arg) {
-    return arg;
-  }
-
-  for (const candidate of ["App.easys", "examples/App.easys"]) {
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
-  }
-
-  return "App.easys";
-}
-
-function build() {
-  const file = resolveInputFile();
-
-  if (!fs.existsSync(file)) {
-    console.error(`EasyS file not found: ${file}`);
-    console.error("");
-    console.error("Usage: easys build <file.easys>");
-    console.error("Example: easys build examples/App.easys");
-
-    process.exit(1);
-  }
-
-  console.log(`Building ${file}...`);
-
-  const source = fs.readFileSync(file, "utf-8");
-
-  const tokens = new Lexer(source, file).tokenize();
-
-  const ast = new Parser(tokens).parse();
-
-  new Analyzer().analyze(ast);
-
-  const output = new HtmlGenerator().generate(ast);
-
-  const dist = path.join(process.cwd(), "dist");
-
-  if (!fs.existsSync(dist)) {
-    fs.mkdirSync(dist);
-  }
-
-  fs.writeFileSync(path.join(dist, "index.html"), output.html);
-  fs.writeFileSync(path.join(dist, "style.css"), output.css);
-  fs.writeFileSync(path.join(dist, "app.js"), output.js);
-
-  console.log("✓ Build complete");
-
-  console.log("dist/index.html created");
-  console.log("dist/style.css created");
-  console.log("dist/app.js created");
-}
+import { init } from "./commands/init";
+import { build } from "./commands/build";
+import { dev } from "./commands/dev";
+import { check } from "./commands/check";
+import { format } from "./commands/format";
 
 function main() {
-  const command = process.argv[2];
+  const args = process.argv.slice(2);
+  const command = args[0];
 
   switch (command) {
-    case "build":
-      build();
+    case "init":
+      init(args[1]);
+      break;
 
+    case "build":
+      build(args[1]);
+      break;
+
+    case "dev":
+      dev();
+      break;
+
+    case "check":
+      check(args[1]);
+      break;
+
+    case "format":
+      format(args[1]);
       break;
 
     default:
@@ -77,13 +37,19 @@ EasyS CLI
 
 Commands:
 
-  easys build [file.easys]
+  easys init <name>       Create a new project
+  easys build [file]      Compile .easys to dist/
+  easys dev               Build, serve, and watch
+  easys check [file]      Typecheck without emit
+  easys format [file]     Format .easys source
 
 Examples:
 
-  easys build examples/App.easys
-  easys build App.easys
-
+  easys init my-site
+  easys build
+  easys build examples/full.easys
+  easys dev
+  easys check
 `);
   }
 }
