@@ -1,0 +1,9 @@
+{
+  "name": "easys-demo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node ../../scripts/vercel-build-demo.js",
+    "vercel-build": "node ../../scripts/vercel-build-demo.js"
+  }
+}
